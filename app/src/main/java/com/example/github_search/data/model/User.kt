@@ -12,6 +12,10 @@ data class User(
     @Expose
     val id: Long,
 
+    @SerializedName("avatar_url")
+    @Expose
+    val avatarUrl: String,
+
     @SerializedName("url")
     @Expose
     val url: String,
@@ -20,27 +24,19 @@ data class User(
     @Expose
     val html_url: String,
 
-    @SerializedName("followers_url")
+    @SerializedName("name")
     @Expose
-    val followers_url: String,
+    val name: String,
 
-    @SerializedName("following_url")
+    @SerializedName("blog")
     @Expose
-    val following_url: String,
+    val blog: String,
 
-    @SerializedName("starred_url")
+    @SerializedName("location")
     @Expose
-    val starred_url: String,
+    val location: String,
 
-    @SerializedName("gists_url")
+    @SerializedName("bio")
     @Expose
-    val gists_url: String,
-
-    @SerializedName("type")
-    @Expose
-    val type: String,
-
-    @SerializedName("score")
-    @Expose
-    val score: Int
+    val bio: String
 )

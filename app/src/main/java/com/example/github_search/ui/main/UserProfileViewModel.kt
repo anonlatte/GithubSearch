@@ -4,18 +4,18 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
-import com.example.github_search.data.model.ApiResponse
+import com.example.github_search.data.model.User
 import com.example.github_search.data.model.UserRepository
 import kotlinx.coroutines.Dispatchers
 import retrofit2.Call
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class UserProfileViewModel(application: Application) : AndroidViewModel(application) {
     private val userRepository = UserRepository()
 
-    fun getUserLiveData(query: String, page: Int): LiveData<Call<ApiResponse>> {
+    fun getUserInfoLiveData(username: String): LiveData<Call<User>> {
         return liveData(Dispatchers.IO) {
-            val receivedUsers = userRepository.getUsers(query, page)
-            emit(receivedUsers)
+            val receivedUser = userRepository.getUserInfo(username)
+            emit(receivedUser)
         }
     }
 }

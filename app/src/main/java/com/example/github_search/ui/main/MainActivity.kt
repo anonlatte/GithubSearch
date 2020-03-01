@@ -1,6 +1,7 @@
 package com.example.github_search.ui.main
 
 import android.os.Bundle
+import android.text.SpannableString
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -20,6 +21,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mainViewModel: MainViewModel
     private val userArrayList: ArrayList<User> = ArrayList()
     private lateinit var adapter: UserRecyclerViewAdapter
+    private lateinit var pagination: Pagination
+    private var userQuery = "team"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,11 +33,14 @@ class MainActivity : AppCompatActivity() {
         adapter = UserRecyclerViewAdapter(this@MainActivity, userArrayList)
         list.adapter = adapter
 
+        // Initialize pagination
+        pagination = Pagination(0)
+
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         searchView.setOnQueryTextListener(object :
             androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                showUsers(query!!)
+                showUsers(query!!, 1)
                 return true
             }
 
@@ -43,23 +49,56 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
-        showUsers("tom")
+
+        // Test initialization
+        showUsers("anonlatte", 1)
+        toggleButtons()
+
+        nextButton.setOnClickListener {
+            pagination.currentPage += 1
+            showUsers(userQuery, pagination.currentPage)
+        }
+        prevButton.setOnClickListener {
+            pagination.currentPage -= 1
+            showUsers(userQuery, pagination.currentPage)
+        }
     }
 
-    private fun showUsers(query: String) {
-        mainViewModel.getUserLiveData(query).observe(this, Observer {
+    private fun toggleButtons() {
+        if (pagination.currentPage >= 1 && pagination.currentPage < pagination.lastPage) {
+            nextButton.isEnabled = true
+        } else if (pagination.currentPage < 1 || pagination.currentPage >= pagination.lastPage) {
+            nextButton.isEnabled = false
+        }
+        prevButton.isEnabled = pagination.currentPage > 1
+
+        // Change feedback about pages
+        pagesLeft.text = SpannableString("Page ${pagination.currentPage} of ${pagination.lastPage}")
+    }
+
+    private fun showUsers(query: String, page: Int) {
+        mainViewModel.getUserLiveData(query, page).observe(this, Observer {
             it.enqueue(object : Callback<ApiResponse> {
                 override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                    userArrayList.clear()
-                    userArrayList.addAll(response.body()!!.usersList)
-                    adapter.notifyDataSetChanged()
-                    Log.v("Request: ", call.request().url().toString())
+                    if (response.body() != null) {
+                        userArrayList.clear()
+                        userArrayList.addAll(response.body()!!.usersList)
+                        adapter.notifyDataSetChanged()
+
+                        // Reinitialize pagination store
+                        if (userQuery != query) {
+                            userQuery = query
+                            pagination = Pagination(response.body()!!.count)
+                        }
+                        toggleButtons()
+                        Log.v("Request", call.request().url().toString())
+                        Log.v("Request", "Were found ${response.body()!!.count} users.")
+                    }
                 }
 
                 override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
                     Log.v("Request", t.message!!)
                 }
-
             })
         })
     }
