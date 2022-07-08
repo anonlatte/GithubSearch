@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.search.SearchFragment">
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search_view"
@@ -24,7 +23,6 @@
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toTopOf="@+id/flow_bottom_controls"
         app:layout_constraintTop_toBottomOf="@+id/search_view"
-        tools:context=".data.model.UserFragment"
         tools:listitem="@layout/item_user" />
 
     <androidx.constraintlayout.helper.widget.Flow

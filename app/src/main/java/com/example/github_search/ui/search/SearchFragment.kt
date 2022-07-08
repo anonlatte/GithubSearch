@@ -1,36 +1,32 @@
 package com.example.github_search.ui.search
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import android.view.View
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.github_search.R
 import com.example.github_search.databinding.FragmentSearchBinding
-import com.example.github_search.ui.profile.ProfileFragment
 
-class SearchFragment : AppCompatActivity() {
+class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private val binding by viewBinding(FragmentSearchBinding::bind)
     private val viewModel: SearchViewModel by viewModels()
     private var adapter: UserRecyclerViewAdapter = UserRecyclerViewAdapter { user ->
-        val profileIntent = Intent(this, ProfileFragment::class.java)
-            .putExtra("usersLogin", user.login)
-        startActivity(profileIntent)
+        findNavController().navigate(
+            SearchFragmentDirections.actionSearchToProfile(user.login)
+        )
     }
 
-    private lateinit var pagination: Pagination
+    private var pagination = Pagination(0)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_search)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.rvUsers.adapter = adapter
-
-        // Initialize pagination
-        pagination = Pagination(0)
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean =
@@ -77,7 +73,7 @@ class SearchFragment : AppCompatActivity() {
     }
 
     private fun showUsers(query: String, page: Int, isNewQuery: Boolean = true) {
-        viewModel.getUserLiveData(query, page).observe(this) {
+        viewModel.getUserLiveData(query, page).observe(viewLifecycleOwner) {
             adapter.submitList(it.users)
             pagination = if (isNewQuery) {
                 Pagination(it.amount)

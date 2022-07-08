@@ -1,8 +1,10 @@
 package com.example.github_search.ui.profile
 
 import android.os.Bundle
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -10,20 +12,16 @@ import com.example.github_search.R
 import com.example.github_search.app.data.model.UserResponse
 import com.example.github_search.databinding.FragmentProfileBinding
 
-class ProfileFragment : AppCompatActivity() {
+class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private val binding by viewBinding(FragmentProfileBinding::bind)
     private val userViewModel: ProfileViewModel by viewModels()
-    private val userLogin: String by lazy { intent.getStringExtra("usersLogin") ?: "" }
+    private val navArgs by navArgs<ProfileFragmentArgs>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_profile)
-
-        if (userLogin.isNotEmpty()) {
-            userViewModel.getUserInfoLiveData(userLogin)
-                .observe(this, ::initProfile)
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        userViewModel.getUserInfoLiveData(navArgs.userLogin)
+            .observe(viewLifecycleOwner, ::initProfile)
     }
 
     private fun initProfile(user: UserResponse) = with(binding) {
