@@ -1,4 +1,4 @@
-package com.example.github_search.ui.main
+package com.example.github_search.ui.search
 
 import kotlin.math.ceil
 

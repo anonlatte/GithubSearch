@@ -1,7 +1,7 @@
 package com.example.github_search
 
 import androidx.lifecycle.liveData
-import com.example.github_search.data.model.api.GitHubService
+import com.example.github_search.app.network.api.GitHubServiceImpl.gitHubServiceImpl
 import kotlinx.coroutines.Dispatchers
 import org.junit.Assert
 import org.junit.Test
@@ -14,9 +14,8 @@ import org.junit.Test
 class UnitTest {
     @Test
     fun getTestUsers() {
-        val apiService = GitHubService.create()
         val testUsers = liveData(Dispatchers.IO) {
-            val receivedUsers = apiService.getUsers("anonlatte")
+            val receivedUsers = gitHubServiceImpl.getUsers("anonlatte", 1)
             emit(receivedUsers)
         }
 
