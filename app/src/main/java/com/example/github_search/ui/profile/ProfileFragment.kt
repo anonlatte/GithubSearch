@@ -7,7 +7,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import coil.load
-import coil.transform.CircleCropTransformation
 import com.example.github_search.R
 import com.example.github_search.app.data.model.UserResponse
 import com.example.github_search.databinding.FragmentProfileBinding
@@ -29,8 +28,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         tvBlog.text = user.blog
         tvLocation.text = user.location
         tvBio.text = user.bio
-        ivAvatar.load(user.avatarUrl) {
-            transformations(CircleCropTransformation())
-        }
+        ivAvatar.load(user.avatarUrl)
     }
 }
